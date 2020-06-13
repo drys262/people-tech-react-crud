@@ -1,11 +1,19 @@
 // import produce from 'immer';
-import mainPageReducer from '../reducer';
+import loginPageReducer from '../reducer';
 // import { someAction } from '../actions';
 
 /* eslint-disable default-case, no-param-reassign */
-describe('mainPageReducer', () => {
+describe('loginPageReducer', () => {
+  let state;
+  beforeEach(() => {
+    state = {
+      // default state params here
+    };
+  });
+
   it('returns the initial state', () => {
-    expect(mainPageReducer(undefined, {})).toMatchSnapshot();
+    const expectedResult = state;
+    expect(loginPageReducer(undefined, {})).toEqual(expectedResult);
   });
 
   /**

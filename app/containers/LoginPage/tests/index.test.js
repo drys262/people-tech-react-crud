@@ -1,6 +1,6 @@
 /**
  *
- * Tests for MainPage
+ * Tests for LoginPage
  *
  * @see https://github.com/react-boilerplate/react-boilerplate/tree/master/docs/testing
  *
@@ -11,23 +11,23 @@ import { render } from 'react-testing-library';
 import { IntlProvider } from 'react-intl';
 // import 'jest-dom/extend-expect'; // add some helpful assertions
 
-import { MainPage } from '../index';
+import { LoginPage } from '../index';
 import { DEFAULT_LOCALE } from '../../../i18n';
 
-describe.skip('<MainPage />', () => {
+describe('<LoginPage />', () => {
   it('Expect to not log errors in console', () => {
     const spy = jest.spyOn(global.console, 'error');
     const dispatch = jest.fn();
     render(
       <IntlProvider locale={DEFAULT_LOCALE}>
-        <MainPage dispatch={dispatch} />
+        <LoginPage dispatch={dispatch} />
       </IntlProvider>,
     );
     expect(spy).not.toHaveBeenCalled();
   });
 
   it('Expect to have additional unit tests specified', () => {
-    expect(true).toEqual(true);
+    expect(true).toEqual(false);
   });
 
   /**
@@ -40,7 +40,7 @@ describe.skip('<MainPage />', () => {
       container: { firstChild },
     } = render(
       <IntlProvider locale={DEFAULT_LOCALE}>
-        <MainPage />
+        <LoginPage />
       </IntlProvider>,
     );
     expect(firstChild).toMatchSnapshot();

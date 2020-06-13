@@ -114,6 +114,23 @@ module.exports = options => ({
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development',
     }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+        FIREBASE_KEY: JSON.stringify(process.env.FIREBASE_KEY),
+        FIREBASE_DOMAIN: JSON.stringify(process.env.FIREBASE_DOMAIN),
+        FIREBASE_DATABASE: JSON.stringify(process.env.FIREBASE_DATABASE),
+        FIREBASE_PROJECT_ID: JSON.stringify(process.env.FIREBASE_PROJECT_ID),
+        FIREBASE_STORAGE_BUCKET: JSON.stringify(
+          process.env.FIREBASE_STORAGE_BUCKET,
+        ),
+        FIREBASE_SENDER_ID: JSON.stringify(process.env.FIREBASE_SENDER_ID),
+        FIREBASE_APP_ID: JSON.stringify(process.env.FIREBASE_APP_ID),
+        FIREBASE_MEASUREMENT_ID: JSON.stringify(
+          process.env.FIREBASE_MEASUREMENT_ID,
+        ),
+      },
+    }),
   ]),
   resolve: {
     modules: ['node_modules', 'app'],
