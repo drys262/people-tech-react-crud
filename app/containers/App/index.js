@@ -14,7 +14,7 @@ import { Switch, Route } from 'react-router-dom';
 import PrivateRoute from 'components/PrivateRoute';
 import LoginPage from 'containers/LoginPage/Loadable';
 import MainPage from 'containers/MainPage/Loadable';
-import AuthProvider from '../../context/Auth';
+import { AuthProvider } from '../../context/Auth';
 
 import GlobalStyle from '../../global-styles';
 

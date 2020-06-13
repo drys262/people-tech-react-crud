@@ -4,12 +4,13 @@
  *
  */
 
-import React, { memo } from 'react';
+import React, { memo, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
+import { Redirect } from 'react-router';
 
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -29,6 +30,7 @@ import { makeSelectPassword, makeSelectUsername } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import { changePassword, changeUsername, loginUser } from './actions';
+import { AuthContext } from '../../context/Auth';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -61,6 +63,12 @@ export function LoginPage({
   useInjectSaga({ key: 'loginPage', saga });
 
   const classes = useStyles();
+
+  const { currentUser } = useContext(AuthContext);
+
+  if (currentUser) {
+    return <Redirect to="/" />;
+  }
 
   return (
     <div>

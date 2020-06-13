@@ -13,14 +13,8 @@ const firebaseConfig = {
   measurementId: process.env.FIREBASE_MEASUREMENT_ID,
 };
 
-console.log(firebaseConfig);
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const firestore = firebase.firestore();
-
-// const b = async function() {
-//   const a = await auth.signInWithEmailAndPassword('', '');
-//   a.
-// };
 
 export { auth, firestore };

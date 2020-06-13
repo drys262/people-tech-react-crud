@@ -21,7 +21,7 @@ const PrivateRoute = ({ component: RouteComponent, ...rest }) => {
 };
 
 PrivateRoute.propTypes = {
-  component: PropTypes.node,
+  component: PropTypes.any,
 };
 
 export default PrivateRoute;

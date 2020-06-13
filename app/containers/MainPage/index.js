@@ -18,6 +18,7 @@ import makeSelectMainPage from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import messages from './messages';
+import { auth } from '../../utils/firebase';
 
 export function MainPage() {
   useInjectReducer({ key: 'mainPage', reducer });
@@ -30,6 +31,9 @@ export function MainPage() {
         <meta name="description" content="Description of MainPage" />
       </Helmet>
       <FormattedMessage {...messages.header} />
+      <button type="button" onClick={() => auth.signOut()}>
+        Sign out
+      </button>
     </div>
   );
 }
