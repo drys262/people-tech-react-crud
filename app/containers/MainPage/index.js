@@ -1,8 +1,3 @@
-/**
- *
- * MainPage
- *
- */
 import React, { memo, useEffect, useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import R from 'ramda';
@@ -23,10 +18,12 @@ import tableIcons from './tableIcons';
 import { streamPeopleFromDB, deleteDevFromDB } from './api';
 import DeleteDialog from './DeleteDialog';
 import CreateNewDialog from './CreateNewDialog';
+import EditDevDialog from './EditDevDialog';
 
 const columns = [
   { title: 'Name', field: 'name' },
   { title: 'Tech Stack', field: 'techStack' },
+  { title: 'Github Handle', field: 'githubHandle' },
 ];
 
 export function MainPage({
@@ -39,6 +36,7 @@ export function MainPage({
   useInjectSaga({ key: 'mainPage', saga });
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
   const [selectedDev, setSelectedDev] = useState({});
   const { currentUser } = useContext(AuthContext);
 
@@ -55,15 +53,23 @@ export function MainPage({
     {
       icon: 'save',
       tooltip: 'Edit User',
-      onClick: (event, row) => alert(`You saved ${row.name}`),
+      onClick: (_, row) => {
+        setSelectedDev(row);
+        setOpenEditDialog(true);
+      },
     },
     {
       icon: 'delete',
       tooltip: 'Delete User',
-      onClick: (event, row) => {
+      onClick: (_, row) => {
         setSelectedDev(row);
         setOpenDeleteDialog(true);
       },
+    },
+    {
+      icon: 'folder',
+      tooltip: 'Show repos',
+      onClick: () => {},
     },
     {
       icon: 'add',
@@ -109,6 +115,11 @@ export function MainPage({
         onClose={() => setOpenDeleteDialog(false)}
         selectedDev={selectedDev}
         deleteButtonHandler={deleteDevHandler}
+      />
+      <EditDevDialog
+        open={openEditDialog}
+        onClose={() => setOpenEditDialog(false)}
+        selectedDev={selectedDev}
       />
       <CreateNewDialog
         open={openCreateDialog}

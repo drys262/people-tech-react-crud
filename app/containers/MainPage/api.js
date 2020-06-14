@@ -1,6 +1,7 @@
 /** eslint-disable */
 import { firestore } from 'utils/firebase';
 import R from 'ramda';
+import { v4 as uuidv4 } from 'uuid';
 
 const getPeopleFromDB = async userId => {
   const documents = await firestore
@@ -33,4 +34,37 @@ const deleteDevFromDB = (userId, devId) =>
       throw error;
     });
 
-export { getPeopleFromDB, streamPeopleFromDB, deleteDevFromDB };
+const saveDevFromDB = ({ name, techStack, githubHandle, userId }) => {
+  const devId = uuidv4();
+  return firestore
+    .collection('people')
+    .doc(userId)
+    .collection('devs')
+    .doc(devId)
+    .set({
+      devId,
+      name,
+      techStack,
+      githubHandle,
+    });
+};
+
+const updateDevFromDB = ({ name, techStack, githubHandle, userId, devId }) =>
+  firestore
+    .collection('people')
+    .doc(userId)
+    .collection('devs')
+    .doc(devId)
+    .update({
+      name,
+      techStack,
+      githubHandle,
+    });
+
+export {
+  getPeopleFromDB,
+  streamPeopleFromDB,
+  deleteDevFromDB,
+  saveDevFromDB,
+  updateDevFromDB,
+};

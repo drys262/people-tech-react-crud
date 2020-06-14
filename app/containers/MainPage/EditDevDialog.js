@@ -10,9 +10,11 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import SpanError from './SpanError';
-import { saveDevFromDB } from './api';
 import { AuthContext } from '../../context/Auth';
-export default function CreateNewDialog({ open, onClose }) {
+import { updateDevFromDB } from './api';
+
+export default function EditDevDialog({ open, onClose, selectedDev }) {
+  const { name, techStack, githubHandle, devId } = selectedDev;
   const { handleSubmit, register, errors, reset } = useForm();
 
   const {
@@ -21,9 +23,10 @@ export default function CreateNewDialog({ open, onClose }) {
 
   const onSubmit = async data => {
     onClose();
-    await saveDevFromDB({
+    await updateDevFromDB({
       ...data,
       userId: uid,
+      devId,
     });
     reset();
   };
@@ -35,7 +38,7 @@ export default function CreateNewDialog({ open, onClose }) {
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="form-dialog-title">Create new Developer</DialogTitle>
+      <DialogTitle id="form-dialog-title">Edit Developer</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <DialogContentText>
@@ -49,6 +52,7 @@ export default function CreateNewDialog({ open, onClose }) {
             label="Name"
             type="text"
             fullWidth
+            defaultValue={name}
             inputRef={register({ required: true })}
           />
           {errors.name && <SpanError>This field is required.</SpanError>}
@@ -59,6 +63,7 @@ export default function CreateNewDialog({ open, onClose }) {
             label="Tech Stack"
             type="text"
             fullWidth
+            defaultValue={techStack}
             inputRef={register}
           />
           <TextField
@@ -68,6 +73,7 @@ export default function CreateNewDialog({ open, onClose }) {
             label="GitHub Handle"
             type="text"
             fullWidth
+            defaultValue={githubHandle}
             inputRef={register}
           />
         </DialogContent>
@@ -84,7 +90,8 @@ export default function CreateNewDialog({ open, onClose }) {
   );
 }
 
-CreateNewDialog.propTypes = {
+EditDevDialog.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
+  selectedDev: PropTypes.object,
 };
