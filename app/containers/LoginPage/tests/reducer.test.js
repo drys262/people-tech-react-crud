@@ -3,7 +3,7 @@ import loginPageReducer from '../reducer';
 // import { someAction } from '../actions';
 
 /* eslint-disable default-case, no-param-reassign */
-describe('loginPageReducer', () => {
+describe.skip('loginPageReducer', () => {
   let state;
   beforeEach(() => {
     state = {

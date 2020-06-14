@@ -4,16 +4,8 @@ import signUpPageReducer from '../reducer';
 
 /* eslint-disable default-case, no-param-reassign */
 describe('signUpPageReducer', () => {
-  let state;
-  beforeEach(() => {
-    state = {
-      // default state params here
-    };
-  });
-
   it('returns the initial state', () => {
-    const expectedResult = state;
-    expect(signUpPageReducer(undefined, {})).toEqual(expectedResult);
+    expect(signUpPageReducer(undefined, {})).toMatchSnapshot();
   });
 
   /**
