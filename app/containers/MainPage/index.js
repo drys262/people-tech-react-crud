@@ -3,26 +3,83 @@
  * MainPage
  *
  */
-
-import React, { memo } from 'react';
+import React, { memo, useEffect, useContext, useState } from 'react';
 import PropTypes from 'prop-types';
+import R from 'ramda';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
-import { FormattedMessage } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-
+import MaterialTable from 'material-table';
 import { useInjectSaga } from 'utils/injectSaga';
 import { useInjectReducer } from 'utils/injectReducer';
-import makeSelectMainPage from './selectors';
+import { makeSelectPeople, makeSelectIsFetchingPeople } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-import messages from './messages';
 import { auth } from '../../utils/firebase';
+import { loadPeople, loadPeopleSuccess } from './actions';
+import { AuthContext } from '../../context/Auth';
+import tableIcons from './tableIcons';
+import { streamPeopleFromDB, deleteDevFromDB } from './api';
+import DeleteDialog from './DeleteDialog';
+import CreateNewDialog from './CreateNewDialog';
 
-export function MainPage() {
+const columns = [
+  { title: 'Name', field: 'name' },
+  { title: 'Tech Stack', field: 'techStack' },
+];
+
+export function MainPage({
+  people,
+  loadPeopleData,
+  isFetchingPeople,
+  loadPeopleSuccessData,
+}) {
   useInjectReducer({ key: 'mainPage', reducer });
   useInjectSaga({ key: 'mainPage', saga });
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  const [selectedDev, setSelectedDev] = useState({});
+  const { currentUser } = useContext(AuthContext);
+
+  useEffect(() => {
+    loadPeopleData(currentUser.uid);
+    const unsubscribe = streamPeopleFromDB(currentUser.uid, {
+      next: documents =>
+        loadPeopleSuccessData(R.map(doc => doc.data())(documents.docs)),
+    });
+    return unsubscribe;
+  }, []);
+
+  const actions = [
+    {
+      icon: 'save',
+      tooltip: 'Edit User',
+      onClick: (event, row) => alert(`You saved ${row.name}`),
+    },
+    {
+      icon: 'delete',
+      tooltip: 'Delete User',
+      onClick: (event, row) => {
+        setSelectedDev(row);
+        setOpenDeleteDialog(true);
+      },
+    },
+    {
+      icon: 'add',
+      tooltip: 'Add User',
+      isFreeAction: true,
+      onClick: () => {
+        setOpenCreateDialog(true);
+      },
+    },
+  ];
+
+  const deleteDevHandler = async () => {
+    setOpenDeleteDialog(false);
+    await deleteDevFromDB(currentUser.uid, selectedDev.devId);
+    setSelectedDev({});
+  };
 
   return (
     <div>
@@ -30,25 +87,53 @@ export function MainPage() {
         <title>MainPage</title>
         <meta name="description" content="Description of MainPage" />
       </Helmet>
-      <FormattedMessage {...messages.header} />
+
       <button type="button" onClick={() => auth.signOut()}>
         Sign out
       </button>
+
+      <MaterialTable
+        isLoading={isFetchingPeople}
+        title="List of Developers"
+        icons={tableIcons}
+        columns={(people && columns) || []}
+        data={people}
+        actions={actions}
+        options={{
+          actionsColumnIndex: -1,
+        }}
+      />
+
+      <DeleteDialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        selectedDev={selectedDev}
+        deleteButtonHandler={deleteDevHandler}
+      />
+      <CreateNewDialog
+        open={openCreateDialog}
+        onClose={() => setOpenCreateDialog(false)}
+      />
     </div>
   );
 }
 
 MainPage.propTypes = {
-  dispatch: PropTypes.func.isRequired,
+  people: PropTypes.array,
+  loadPeopleData: PropTypes.func,
+  isFetchingPeople: PropTypes.bool,
+  loadPeopleSuccessData: PropTypes.func,
 };
 
 const mapStateToProps = createStructuredSelector({
-  mainPage: makeSelectMainPage(),
+  people: makeSelectPeople(),
+  isFetchingPeople: makeSelectIsFetchingPeople(),
 });
 
 function mapDispatchToProps(dispatch) {
   return {
-    dispatch,
+    loadPeopleData: userId => dispatch(loadPeople(userId)),
+    loadPeopleSuccessData: people => dispatch(loadPeopleSuccess(people)),
   };
 }
 

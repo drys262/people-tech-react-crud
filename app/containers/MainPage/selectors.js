@@ -21,5 +21,17 @@ const makeSelectMainPage = () =>
     substate => substate,
   );
 
+const makeSelectPeople = () =>
+  createSelector(
+    selectMainPageDomain,
+    substate => substate.people,
+  );
+
+const makeSelectIsFetchingPeople = () =>
+  createSelector(
+    selectMainPageDomain,
+    substate => substate.isFetchingPeople,
+  );
+
 export default makeSelectMainPage;
-export { selectMainPageDomain };
+export { selectMainPageDomain, makeSelectPeople, makeSelectIsFetchingPeople };
