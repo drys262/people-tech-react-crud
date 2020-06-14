@@ -33,5 +33,37 @@ const makeSelectIsFetchingPeople = () =>
     substate => substate.isFetchingPeople,
   );
 
+const makeSelectSelectedDev = () =>
+  createSelector(
+    selectMainPageDomain,
+    substate => substate.selectedDev,
+  );
+
+const makeSelectRepos = () =>
+  createSelector(
+    selectMainPageDomain,
+    substate => substate.selectedDevRepo,
+  );
+
+const makeSelectError = () =>
+  createSelector(
+    selectMainPageDomain,
+    substate => substate.error,
+  );
+
+const makeSelectLoading = () =>
+  createSelector(
+    selectMainPageDomain,
+    globalState => globalState.loadingRepos,
+  );
+
 export default makeSelectMainPage;
-export { selectMainPageDomain, makeSelectPeople, makeSelectIsFetchingPeople };
+export {
+  selectMainPageDomain,
+  makeSelectPeople,
+  makeSelectIsFetchingPeople,
+  makeSelectSelectedDev,
+  makeSelectRepos,
+  makeSelectError,
+  makeSelectLoading,
+};

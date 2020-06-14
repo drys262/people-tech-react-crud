@@ -1,7 +1,15 @@
-import { all, takeLatest, call, put } from 'redux-saga/effects';
-import { LOAD_PEOPLE } from './constants';
+import { all, takeLatest, call, put, select } from 'redux-saga/effects';
+import request from 'utils/request';
+import { LOAD_PEOPLE, LOAD_REPOS } from './constants';
 import { getPeopleFromDB } from './api';
-import { loadPeopleFailed, loadPeopleSuccess } from './actions';
+import {
+  loadPeopleFailed,
+  loadPeopleSuccess,
+  repoLoadingError,
+  reposLoaded,
+} from './actions';
+import { showError } from '../App/actions';
+import { makeSelectSelectedDev } from './selectors';
 
 function* fetchPeople(action) {
   try {
@@ -16,9 +24,27 @@ function* loadPeople() {
   yield takeLatest(LOAD_PEOPLE, fetchPeople);
 }
 
-// Individual exports for testing
-export default function* mainPageSaga() {
-  // See example in containers/HomePage/saga.js
+export function* getRepos() {
+  const selectedDev = yield select(makeSelectSelectedDev());
+  const requestURL = `https://api.github.com/users/${
+    selectedDev.githubHandle
+  }/repos?type=all&sort=updated`;
 
-  yield all([loadPeople()]);
+  try {
+    // Call our request helper (see 'utils/request')
+    const repos = yield call(request, requestURL);
+    console.log('respos here saga', repos);
+    yield put(reposLoaded(repos));
+  } catch (error) {
+    yield put(repoLoadingError(error));
+    yield put(showError('GitHub handle not found.'));
+  }
+}
+
+function* loadRepos() {
+  yield takeLatest(LOAD_REPOS, getRepos);
+}
+
+export default function* mainPageSaga() {
+  yield all([loadPeople(), loadRepos()]);
 }

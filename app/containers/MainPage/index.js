@@ -12,13 +12,14 @@ import { makeSelectPeople, makeSelectIsFetchingPeople } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import { auth } from '../../utils/firebase';
-import { loadPeople, loadPeopleSuccess } from './actions';
+import { loadPeople, loadPeopleSuccess, selectDev } from './actions';
 import { AuthContext } from '../../context/Auth';
 import tableIcons from './tableIcons';
-import { streamPeopleFromDB, deleteDevFromDB } from './api';
-import DeleteDialog from './DeleteDialog';
-import CreateNewDialog from './CreateNewDialog';
-import EditDevDialog from './EditDevDialog';
+import { streamPeopleFromDB } from './api';
+import DeleteDialog from './components/DeleteDialog';
+import CreateNewDialog from './components/CreateNewDialog';
+import EditDevDialog from './components/EditDevDialog';
+import ShowGithubRepoDialog from './components/ShowGithubRepoDialog';
 
 const columns = [
   { title: 'Name', field: 'name' },
@@ -31,13 +32,14 @@ export function MainPage({
   loadPeopleData,
   isFetchingPeople,
   loadPeopleSuccessData,
+  setSelectedDev,
 }) {
   useInjectReducer({ key: 'mainPage', reducer });
   useInjectSaga({ key: 'mainPage', saga });
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [selectedDev, setSelectedDev] = useState({});
+  const [openGithubRepoDialog, setOpenGithubRepoDialog] = useState(false);
   const { currentUser } = useContext(AuthContext);
 
   useEffect(() => {
@@ -69,7 +71,10 @@ export function MainPage({
     {
       icon: 'folder',
       tooltip: 'Show repos',
-      onClick: () => {},
+      onClick: (_, row) => {
+        setSelectedDev(row);
+        setOpenGithubRepoDialog(true);
+      },
     },
     {
       icon: 'add',
@@ -80,12 +85,6 @@ export function MainPage({
       },
     },
   ];
-
-  const deleteDevHandler = async () => {
-    setOpenDeleteDialog(false);
-    await deleteDevFromDB(currentUser.uid, selectedDev.devId);
-    setSelectedDev({});
-  };
 
   return (
     <div>
@@ -113,17 +112,18 @@ export function MainPage({
       <DeleteDialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
-        selectedDev={selectedDev}
-        deleteButtonHandler={deleteDevHandler}
       />
       <EditDevDialog
         open={openEditDialog}
         onClose={() => setOpenEditDialog(false)}
-        selectedDev={selectedDev}
       />
       <CreateNewDialog
         open={openCreateDialog}
         onClose={() => setOpenCreateDialog(false)}
+      />
+      <ShowGithubRepoDialog
+        open={openGithubRepoDialog}
+        onClose={() => setOpenGithubRepoDialog(false)}
       />
     </div>
   );
@@ -134,6 +134,7 @@ MainPage.propTypes = {
   loadPeopleData: PropTypes.func,
   isFetchingPeople: PropTypes.bool,
   loadPeopleSuccessData: PropTypes.func,
+  setSelectedDev: PropTypes.func,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -145,6 +146,7 @@ function mapDispatchToProps(dispatch) {
   return {
     loadPeopleData: userId => dispatch(loadPeople(userId)),
     loadPeopleSuccessData: people => dispatch(loadPeopleSuccess(people)),
+    setSelectedDev: selectedDev => dispatch(selectDev(selectedDev)),
   };
 }
 

@@ -10,8 +10,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import SpanError from './SpanError';
-import { saveDevFromDB } from './api';
-import { AuthContext } from '../../context/Auth';
+import { saveDevFromDB } from '../api';
+import { AuthContext } from '../../../context/Auth';
 export default function CreateNewDialog({ open, onClose }) {
   const { handleSubmit, register, errors, reset } = useForm();
 

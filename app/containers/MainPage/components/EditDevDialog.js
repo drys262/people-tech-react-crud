@@ -1,7 +1,9 @@
-import React, { useContext } from 'react';
+import React, { useContext, memo } from 'react';
 import PropTypes from 'prop-types';
+import { createStructuredSelector } from 'reselect';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { useForm } from 'react-hook-form';
-
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -10,10 +12,12 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import SpanError from './SpanError';
-import { AuthContext } from '../../context/Auth';
-import { updateDevFromDB } from './api';
+import { AuthContext } from '../../../context/Auth';
+import { makeSelectSelectedDev } from '../selectors';
 
-export default function EditDevDialog({ open, onClose, selectedDev }) {
+import { updateDevFromDB } from '../api';
+
+export function EditDevDialog({ open, onClose, selectedDev }) {
   const { name, techStack, githubHandle, devId } = selectedDev;
   const { handleSubmit, register, errors, reset } = useForm();
 
@@ -95,3 +99,14 @@ EditDevDialog.propTypes = {
   onClose: PropTypes.func,
   selectedDev: PropTypes.object,
 };
+
+const mapStateToProps = createStructuredSelector({
+  selectedDev: makeSelectSelectedDev(),
+});
+
+const withConnect = connect(mapStateToProps);
+
+export default compose(
+  withConnect,
+  memo,
+)(EditDevDialog);
