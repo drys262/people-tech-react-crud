@@ -27,7 +27,7 @@ import {
 import { makeSelectErrorMessage } from '../../App/selectors';
 import { loadRepos } from '../actions';
 import { clearError } from '../../App/actions';
-import GithubErrorMessage from '../GithubErrorMessage';
+import GithubMessage from '../GithubMessage';
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -97,27 +97,28 @@ export function ShowGithubRepoDialog({
         </Toolbar>
       </AppBar>
       <List>
-        {!error && loading && <h3>Loading ...</h3>}
+        {!error && loading && <GithubMessage>Loading ...</GithubMessage>}
         {(error && (
-          <GithubErrorMessage>
+          <GithubMessage>
             Error retrieving with the specific github handle.
-          </GithubErrorMessage>
+          </GithubMessage>
         )) ||
-          repos.map(({ id, html_url: htmlUrl, name }) => (
-            <>
-              {' '}
-              <ListItem
-                key={id}
-                button
-                onClick={() => {
-                  window.open(htmlUrl);
-                }}
-              >
-                <ListItemText primary={name} />
-              </ListItem>
-              <Divider />
-            </>
-          ))}
+          (!loading &&
+            repos.map(({ id, html_url: htmlUrl, name }, index) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <React.Fragment key={`${index}-${id}`}>
+                {' '}
+                <ListItem
+                  button
+                  onClick={() => {
+                    window.open(htmlUrl);
+                  }}
+                >
+                  <ListItemText primary={name} />
+                </ListItem>
+                <Divider />
+              </React.Fragment>
+            )))}
       </List>
     </Dialog>
   );

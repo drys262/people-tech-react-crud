@@ -31,9 +31,7 @@ export function* getRepos() {
   }/repos?type=all&sort=updated`;
 
   try {
-    // Call our request helper (see 'utils/request')
     const repos = yield call(request, requestURL);
-    console.log('respos here saga', repos);
     yield put(reposLoaded(repos));
   } catch (error) {
     yield put(repoLoadingError(error));
