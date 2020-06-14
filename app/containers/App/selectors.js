@@ -39,6 +39,12 @@ const makeSelectLocation = () =>
     routerState => routerState.location,
   );
 
+const makeSelectErrorMessage = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.errorMessage,
+  );
+
 export {
   selectGlobal,
   makeSelectCurrentUser,
@@ -46,4 +52,5 @@ export {
   makeSelectError,
   makeSelectRepos,
   makeSelectLocation,
+  makeSelectErrorMessage,
 };

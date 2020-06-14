@@ -12,3 +12,5 @@
 export const LOAD_REPOS = 'peopletechtest/App/LOAD_REPOS';
 export const LOAD_REPOS_SUCCESS = 'peopletechtest/App/LOAD_REPOS_SUCCESS';
 export const LOAD_REPOS_ERROR = 'peopletechtest/App/LOAD_REPOS_ERROR';
+export const SHOW_ERROR = 'peopletechtest/App/SHOW_ERROR';
+export const CLEAR_ERROR = 'peopletechtest/App/CLEAR_ERROR';

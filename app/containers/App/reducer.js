@@ -8,17 +8,23 @@
  */
 
 import produce from 'immer';
-import { LOAD_REPOS_SUCCESS, LOAD_REPOS, LOAD_REPOS_ERROR } from './constants';
+import {
+  LOAD_REPOS_SUCCESS,
+  LOAD_REPOS,
+  LOAD_REPOS_ERROR,
+  SHOW_ERROR,
+  CLEAR_ERROR,
+} from './constants';
 
 // The initial state of the App
 export const initialState = {
   loading: false,
   error: false,
+  errorMessage: null,
   currentUser: false,
   userData: {
     repositories: false,
   },
-  user: null,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -40,6 +46,13 @@ const appReducer = (state = initialState, action) =>
       case LOAD_REPOS_ERROR:
         draft.error = action.error;
         draft.loading = false;
+        break;
+
+      case SHOW_ERROR:
+        draft.errorMessage = action.errorMessage;
+        break;
+      case CLEAR_ERROR:
+        draft.errorMessage = null;
         break;
     }
   });

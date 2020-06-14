@@ -13,9 +13,10 @@ import { Switch, Route } from 'react-router-dom';
 
 import PrivateRoute from 'components/PrivateRoute';
 import LoginPage from 'containers/LoginPage/Loadable';
+import SignUpPage from 'containers/SignUpPage/Loadable';
 import MainPage from 'containers/MainPage/Loadable';
-import { AuthProvider } from '../../context/Auth';
 
+import { AuthProvider } from '../../context/Auth';
 import GlobalStyle from '../../global-styles';
 
 const AppWrapper = styled.div`
@@ -42,6 +43,7 @@ export default function App() {
         </Helmet>
         <Switch>
           <Route exact path="/login" component={LoginPage} />
+          <Route exact path="/sign-up" component={SignUpPage} />
           <PrivateRoute exact path="/" component={MainPage} />
         </Switch>
         <GlobalStyle />

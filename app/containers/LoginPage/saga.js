@@ -1,10 +1,10 @@
 import { all, takeLatest, call, put } from 'redux-saga/effects';
 import { LOGIN_USER } from './constants';
-import { loginFailed, loginSuccess } from './actions';
+import { loginSuccess } from './actions';
+import { showError } from '../App/actions';
 import { loginUserWithEmailAndPassword } from './api';
 
 function* loginToFirebaseAuth(action) {
-  //
   const { username, password } = action;
   try {
     const userCredentials = yield call(
@@ -14,7 +14,7 @@ function* loginToFirebaseAuth(action) {
     );
     yield put(loginSuccess(userCredentials.user));
   } catch (error) {
-    yield put(loginFailed(error));
+    yield put(showError(error.message));
   }
 }
 
@@ -22,9 +22,6 @@ function* loginUser() {
   yield takeLatest(LOGIN_USER, loginToFirebaseAuth);
 }
 
-// Individual exports for testing
 export default function* loginPageSaga() {
-  // See example in containers/HomePage/saga.js
-
   yield all([loginUser()]);
 }
