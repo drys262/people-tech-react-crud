@@ -20,6 +20,7 @@ export const FILTER_DATA_SUCCESS =
 export const FILTER_DATA_ERROR = 'peopletechtest/MainPage/FILTER_DATA_ERROR';
 
 export const TOGGLE_FILTER = 'peopletechtest/MainPage/TOGGLE_FILTER';
+export const SET_PEOPLE = 'peopletechtest/MainPage/SET_PEOPLE';
 
 export const filterDataUrl =
   'https://us-central1-peopletechcrud.cloudfunctions.net/httpFilterData';

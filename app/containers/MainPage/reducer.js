@@ -17,6 +17,7 @@ import {
   FILTER_DATA_ERROR,
   FILTER_DATA_SUCCESS,
   TOGGLE_FILTER,
+  SET_PEOPLE,
 } from './constants';
 
 export const initialState = {
@@ -78,6 +79,9 @@ const mainPageReducer = (state = initialState, action) =>
         break;
       case TOGGLE_FILTER:
         draft.toggleFilter = state.toggleFilter === 'asc' ? 'desc' : 'asc';
+        break;
+      case SET_PEOPLE:
+        draft.people = action.people;
         break;
     }
   });

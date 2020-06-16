@@ -17,6 +17,7 @@ import {
   FILTER_DATA_ERROR,
   FILTER_DATA_SUCCESS,
   TOGGLE_FILTER,
+  SET_PEOPLE,
 } from './constants';
 
 export function loadPeople(userId) {
@@ -98,5 +99,12 @@ export function filterReposError(error) {
 export function toggleFilter() {
   return {
     type: TOGGLE_FILTER,
+  };
+}
+
+export function setPeople(people) {
+  return {
+    type: SET_PEOPLE,
+    people,
   };
 }

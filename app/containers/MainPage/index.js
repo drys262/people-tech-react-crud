@@ -7,9 +7,14 @@ import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
 import MaterialTable, { MTableToolbar } from 'material-table';
 import Button from '@material-ui/core/Button';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
 import { useInjectSaga } from 'utils/injectSaga';
 import { useInjectReducer } from 'utils/injectReducer';
-import { makeSelectPeople, makeSelectIsFetchingPeople } from './selectors';
+import {
+  makeSelectPeople,
+  makeSelectIsFetchingPeople,
+  makeSelectToggleFilter,
+} from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import { auth } from '../../utils/firebase';
@@ -19,6 +24,7 @@ import {
   selectDev as selectDevAction,
   filterData as filterDataAction,
   toggleFilter as toggleFilterAction,
+  setPeople as setPeopleAction,
 } from './actions';
 import { AuthContext } from '../../context/Auth';
 import tableIcons from './tableIcons';
@@ -27,6 +33,7 @@ import DeleteDialog from './components/DeleteDialog';
 import CreateNewDialog from './components/CreateNewDialog';
 import EditDevDialog from './components/EditDevDialog';
 import ShowGithubRepoDialog from './components/ShowGithubRepoDialog';
+import MainPageWrapper from './MainPageWrapper';
 
 const columns = [
   { title: 'Name', field: 'name' },
@@ -42,6 +49,8 @@ export function MainPage({
   selectedDev,
   filterData,
   toggleFilter,
+  filter,
+  setPeople,
 }) {
   useInjectReducer({ key: 'mainPage', reducer });
   useInjectSaga({ key: 'mainPage', saga });
@@ -96,68 +105,86 @@ export function MainPage({
   ];
 
   const sortData = () => {
-    //
+    const comparator = filter === 'asc' ? R.ascend : R.descend;
+    const newFilteredPeople = R.sortWith([
+      comparator(R.prop('name')),
+      comparator(R.prop('githubHandle')),
+    ])(people);
+    setPeople(newFilteredPeople);
+    toggleFilter();
   };
 
   return (
-    <div>
-      <Helmet>
-        <title>MainPage</title>
-        <meta name="description" content="Description of MainPage" />
-      </Helmet>
+    <>
+      <MainPageWrapper>
+        <Helmet>
+          <title>MainPage</title>
+          <meta name="description" content="Description of MainPage" />
+        </Helmet>
 
-      <MaterialTable
-        isLoading={isFetchingPeople}
-        title="List of Developers"
-        icons={tableIcons}
-        columns={(people && columns) || []}
-        data={people}
-        actions={actions}
-        options={{
-          actionsColumnIndex: -1,
-        }}
-        components={{
-          Toolbar: props => (
-            <div>
-              <MTableToolbar {...props} />
-              <div style={{ padding: '0px 10px' }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    filterData(currentUser.uid);
-                    toggleFilter();
-                  }}
-                >
-                  Filter in Backend
-                </Button>
+        <MaterialTable
+          isLoading={isFetchingPeople}
+          title="List of Developers"
+          icons={tableIcons}
+          columns={(people && columns) || []}
+          data={people}
+          actions={actions}
+          options={{
+            actionsColumnIndex: -1,
+            search: false,
+          }}
+          components={{
+            Toolbar: props => (
+              <div>
+                <MTableToolbar {...props} />
+                <div style={{ padding: '0px 10px' }}>
+                  <ButtonGroup
+                    variant="contained"
+                    color="primary"
+                    aria-label="contained primary button group"
+                  >
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        filterData(currentUser.uid);
+                        toggleFilter();
+                      }}
+                    >
+                      Filter in Backend
+                    </Button>
 
-                <Button variant="contained" color="primary" onClick={sortData}>
-                  Filter in Client
-                </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={sortData}
+                    >
+                      Filter in Client
+                    </Button>
+                  </ButtonGroup>
+                </div>
               </div>
-            </div>
-          ),
-        }}
-      />
+            ),
+          }}
+        />
 
-      <DeleteDialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-      />
-      <EditDevDialog
-        open={openEditDialog}
-        onClose={() => setOpenEditDialog(false)}
-      />
-      <CreateNewDialog
-        open={openCreateDialog}
-        onClose={() => setOpenCreateDialog(false)}
-      />
-      <ShowGithubRepoDialog
-        open={openGithubRepoDialog}
-        onClose={() => setOpenGithubRepoDialog(false)}
-      />
-
+        <DeleteDialog
+          open={openDeleteDialog}
+          onClose={() => setOpenDeleteDialog(false)}
+        />
+        <EditDevDialog
+          open={openEditDialog}
+          onClose={() => setOpenEditDialog(false)}
+        />
+        <CreateNewDialog
+          open={openCreateDialog}
+          onClose={() => setOpenCreateDialog(false)}
+        />
+        <ShowGithubRepoDialog
+          open={openGithubRepoDialog}
+          onClose={() => setOpenGithubRepoDialog(false)}
+        />
+      </MainPageWrapper>
       <Button
         variant="contained"
         color="primary"
@@ -166,7 +193,7 @@ export function MainPage({
       >
         Sign out
       </Button>
-    </div>
+    </>
   );
 }
 
@@ -178,11 +205,14 @@ MainPage.propTypes = {
   selectedDev: PropTypes.func,
   filterData: PropTypes.func,
   toggleFilter: PropTypes.func,
+  filter: PropTypes.string,
+  setPeople: PropTypes.func,
 };
 
 const mapStateToProps = createStructuredSelector({
   people: makeSelectPeople(),
   isFetchingPeople: makeSelectIsFetchingPeople(),
+  filter: makeSelectToggleFilter(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -192,6 +222,7 @@ function mapDispatchToProps(dispatch) {
     selectedDev: selectedDev => dispatch(selectDevAction(selectedDev)),
     filterData: userId => dispatch(filterDataAction(userId)),
     toggleFilter: () => dispatch(toggleFilterAction()),
+    setPeople: people => dispatch(setPeopleAction(people)),
   };
 }
 
