@@ -13,6 +13,10 @@ import {
   LOAD_REPOS,
   LOAD_REPOS_SUCCESS,
   LOAD_REPOS_ERROR,
+  FILTER_DATA,
+  FILTER_DATA_ERROR,
+  FILTER_DATA_SUCCESS,
+  TOGGLE_FILTER,
 } from './constants';
 
 export const initialState = {
@@ -24,6 +28,7 @@ export const initialState = {
   loadingRepos: false,
   errorMessage: '',
   error: false,
+  toggleFilter: 'asc',
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -60,6 +65,19 @@ const mainPageReducer = (state = initialState, action) =>
         draft.errorMessage = action.error;
         draft.loadingRepos = false;
         draft.error = true;
+        break;
+      case FILTER_DATA:
+        draft.isFetchingPeople = true;
+        break;
+      case FILTER_DATA_SUCCESS:
+        draft.people = action.people;
+        draft.isFetchingPeople = false;
+        break;
+      case FILTER_DATA_ERROR:
+        draft.isFetchingPeople = false;
+        break;
+      case TOGGLE_FILTER:
+        draft.toggleFilter = state.toggleFilter === 'asc' ? 'desc' : 'asc';
         break;
     }
   });

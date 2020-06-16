@@ -13,3 +13,13 @@ export const SELECT_DEV = 'peopletechtest/MainPage/SELECT_DEV';
 export const LOAD_REPOS = 'peopletechtest/MainPage/LOAD_REPOS';
 export const LOAD_REPOS_SUCCESS = 'peopletechtest/MainPage/LOAD_REPOS_SUCCESS';
 export const LOAD_REPOS_ERROR = 'peopletechtest/MainPage/LOAD_REPOS_ERROR';
+
+export const FILTER_DATA = 'peopletechtest/MainPage/FILTER_DATA';
+export const FILTER_DATA_SUCCESS =
+  'peopletechtest/MainPage/FILTER_DATA_SUCCESS';
+export const FILTER_DATA_ERROR = 'peopletechtest/MainPage/FILTER_DATA_ERROR';
+
+export const TOGGLE_FILTER = 'peopletechtest/MainPage/TOGGLE_FILTER';
+
+export const filterDataUrl =
+  'https://us-central1-peopletechcrud.cloudfunctions.net/httpFilterData';

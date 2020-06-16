@@ -13,6 +13,10 @@ import {
   LOAD_REPOS_ERROR,
   LOAD_REPOS_SUCCESS,
   SELECT_DEV,
+  FILTER_DATA,
+  FILTER_DATA_ERROR,
+  FILTER_DATA_SUCCESS,
+  TOGGLE_FILTER,
 } from './constants';
 
 export function loadPeople(userId) {
@@ -67,5 +71,32 @@ export function repoLoadingError(error) {
   return {
     type: LOAD_REPOS_ERROR,
     error,
+  };
+}
+
+export function filterData(userId) {
+  return {
+    type: FILTER_DATA,
+    userId,
+  };
+}
+
+export function filterReposSuccess(people) {
+  return {
+    type: FILTER_DATA_SUCCESS,
+    people,
+  };
+}
+
+export function filterReposError(error) {
+  return {
+    type: FILTER_DATA_ERROR,
+    error,
+  };
+}
+
+export function toggleFilter() {
+  return {
+    type: TOGGLE_FILTER,
   };
 }

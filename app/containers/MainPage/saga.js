@@ -1,15 +1,16 @@
 import { all, takeLatest, call, put, select } from 'redux-saga/effects';
 import request from 'utils/request';
-import { LOAD_PEOPLE, LOAD_REPOS } from './constants';
-import { getPeopleFromDB } from './api';
+import { LOAD_PEOPLE, LOAD_REPOS, FILTER_DATA } from './constants';
+import { getPeopleFromDB, filterData } from './api';
 import {
   loadPeopleFailed,
   loadPeopleSuccess,
   repoLoadingError,
   reposLoaded,
+  filterReposSuccess,
 } from './actions';
 import { showError } from '../App/actions';
-import { makeSelectSelectedDev } from './selectors';
+import { makeSelectSelectedDev, makeSelectToggleFilter } from './selectors';
 
 function* fetchPeople(action) {
   try {
@@ -20,11 +21,7 @@ function* fetchPeople(action) {
   }
 }
 
-function* loadPeople() {
-  yield takeLatest(LOAD_PEOPLE, fetchPeople);
-}
-
-export function* getRepos() {
+function* fetchRepos() {
   const selectedDev = yield select(makeSelectSelectedDev());
   const requestURL = `https://api.github.com/users/${
     selectedDev.githubHandle
@@ -39,10 +36,31 @@ export function* getRepos() {
   }
 }
 
+function* fetchFilterData(action) {
+  const filter = yield select(makeSelectToggleFilter());
+  try {
+    const people = yield call(filterData, {
+      filter,
+      userId: action.userId,
+    });
+    yield put(filterReposSuccess(people.data));
+  } catch (error) {
+    yield put(showError());
+  }
+}
+
 function* loadRepos() {
-  yield takeLatest(LOAD_REPOS, getRepos);
+  yield takeLatest(LOAD_REPOS, fetchRepos);
+}
+
+function* loadPeople() {
+  yield takeLatest(LOAD_PEOPLE, fetchPeople);
+}
+
+function* loadFilterData() {
+  yield takeLatest(FILTER_DATA, fetchFilterData);
 }
 
 export default function* mainPageSaga() {
-  yield all([loadPeople(), loadRepos()]);
+  yield all([loadPeople(), loadRepos(), loadFilterData()]);
 }

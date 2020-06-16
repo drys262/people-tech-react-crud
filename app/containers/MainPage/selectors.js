@@ -57,6 +57,12 @@ const makeSelectLoading = () =>
     globalState => globalState.loadingRepos,
   );
 
+const makeSelectToggleFilter = () =>
+  createSelector(
+    selectMainPageDomain,
+    globalState => globalState.toggleFilter,
+  );
+
 export default makeSelectMainPage;
 export {
   selectMainPageDomain,
@@ -66,4 +72,5 @@ export {
   makeSelectRepos,
   makeSelectError,
   makeSelectLoading,
+  makeSelectToggleFilter,
 };

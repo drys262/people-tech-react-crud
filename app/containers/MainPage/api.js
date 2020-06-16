@@ -1,13 +1,17 @@
 /** eslint-disable */
 import { firestore } from 'utils/firebase';
+import axios from 'axios';
 import R from 'ramda';
 import { v4 as uuidv4 } from 'uuid';
+import { filterDataUrl } from './constants';
 
 const getPeopleFromDB = async userId => {
   const documents = await firestore
     .collection('people')
     .doc(userId)
     .collection('devs')
+    .orderBy('name', 'asc')
+    .orderBy('githubHandle', 'asc')
     .get()
     .catch(error => {
       throw error;
@@ -21,6 +25,8 @@ const streamPeopleFromDB = (userId, observer) =>
     .collection('people')
     .doc(userId)
     .collection('devs')
+    .orderBy('name', 'asc')
+    .orderBy('githubHandle', 'asc')
     .onSnapshot(observer);
 
 const deleteDevFromDB = (userId, devId) =>
@@ -61,10 +67,14 @@ const updateDevFromDB = ({ name, techStack, githubHandle, userId, devId }) =>
       githubHandle,
     });
 
+const filterData = ({ userId, filter }) =>
+  axios.get(`${filterDataUrl}?userId=${userId}&filter=${filter}`);
+
 export {
   getPeopleFromDB,
   streamPeopleFromDB,
   deleteDevFromDB,
   saveDevFromDB,
   updateDevFromDB,
+  filterData,
 };

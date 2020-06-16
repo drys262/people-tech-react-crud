@@ -5,14 +5,21 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-import MaterialTable from 'material-table';
+import MaterialTable, { MTableToolbar } from 'material-table';
+import Button from '@material-ui/core/Button';
 import { useInjectSaga } from 'utils/injectSaga';
 import { useInjectReducer } from 'utils/injectReducer';
 import { makeSelectPeople, makeSelectIsFetchingPeople } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import { auth } from '../../utils/firebase';
-import { loadPeople, loadPeopleSuccess, selectDev } from './actions';
+import {
+  loadPeople as loadPeopleAction,
+  loadPeopleSuccess as loadPeopleSuccessAction,
+  selectDev as selectDevAction,
+  filterData as filterDataAction,
+  toggleFilter as toggleFilterAction,
+} from './actions';
 import { AuthContext } from '../../context/Auth';
 import tableIcons from './tableIcons';
 import { streamPeopleFromDB } from './api';
@@ -29,10 +36,12 @@ const columns = [
 
 export function MainPage({
   people,
-  loadPeopleData,
+  loadPeople,
   isFetchingPeople,
-  loadPeopleSuccessData,
-  setSelectedDev,
+  loadPeopleSuccess,
+  selectedDev,
+  filterData,
+  toggleFilter,
 }) {
   useInjectReducer({ key: 'mainPage', reducer });
   useInjectSaga({ key: 'mainPage', saga });
@@ -43,10 +52,10 @@ export function MainPage({
   const { currentUser } = useContext(AuthContext);
 
   useEffect(() => {
-    loadPeopleData(currentUser.uid);
+    loadPeople(currentUser.uid);
     const unsubscribe = streamPeopleFromDB(currentUser.uid, {
       next: documents =>
-        loadPeopleSuccessData(R.map(doc => doc.data())(documents.docs)),
+        loadPeopleSuccess(R.map(doc => doc.data())(documents.docs)),
     });
     return unsubscribe;
   }, []);
@@ -56,7 +65,7 @@ export function MainPage({
       icon: 'save',
       tooltip: 'Edit User',
       onClick: (_, row) => {
-        setSelectedDev(row);
+        selectedDev(row);
         setOpenEditDialog(true);
       },
     },
@@ -64,7 +73,7 @@ export function MainPage({
       icon: 'delete',
       tooltip: 'Delete User',
       onClick: (_, row) => {
-        setSelectedDev(row);
+        selectedDev(row);
         setOpenDeleteDialog(true);
       },
     },
@@ -72,7 +81,7 @@ export function MainPage({
       icon: 'folder',
       tooltip: 'Show repos',
       onClick: (_, row) => {
-        setSelectedDev(row);
+        selectedDev(row);
         setOpenGithubRepoDialog(true);
       },
     },
@@ -86,16 +95,16 @@ export function MainPage({
     },
   ];
 
+  const sortData = () => {
+    //
+  };
+
   return (
     <div>
       <Helmet>
         <title>MainPage</title>
         <meta name="description" content="Description of MainPage" />
       </Helmet>
-
-      <button type="button" onClick={() => auth.signOut()}>
-        Sign out
-      </button>
 
       <MaterialTable
         isLoading={isFetchingPeople}
@@ -106,6 +115,29 @@ export function MainPage({
         actions={actions}
         options={{
           actionsColumnIndex: -1,
+        }}
+        components={{
+          Toolbar: props => (
+            <div>
+              <MTableToolbar {...props} />
+              <div style={{ padding: '0px 10px' }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    filterData(currentUser.uid);
+                    toggleFilter();
+                  }}
+                >
+                  Filter in Backend
+                </Button>
+
+                <Button variant="contained" color="primary" onClick={sortData}>
+                  Filter in Client
+                </Button>
+              </div>
+            </div>
+          ),
         }}
       />
 
@@ -125,16 +157,27 @@ export function MainPage({
         open={openGithubRepoDialog}
         onClose={() => setOpenGithubRepoDialog(false)}
       />
+
+      <Button
+        variant="contained"
+        color="primary"
+        type="button"
+        onClick={() => auth.signOut()}
+      >
+        Sign out
+      </Button>
     </div>
   );
 }
 
 MainPage.propTypes = {
   people: PropTypes.array,
-  loadPeopleData: PropTypes.func,
+  loadPeople: PropTypes.func,
   isFetchingPeople: PropTypes.bool,
-  loadPeopleSuccessData: PropTypes.func,
-  setSelectedDev: PropTypes.func,
+  loadPeopleSuccess: PropTypes.func,
+  selectedDev: PropTypes.func,
+  filterData: PropTypes.func,
+  toggleFilter: PropTypes.func,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -144,9 +187,11 @@ const mapStateToProps = createStructuredSelector({
 
 function mapDispatchToProps(dispatch) {
   return {
-    loadPeopleData: userId => dispatch(loadPeople(userId)),
-    loadPeopleSuccessData: people => dispatch(loadPeopleSuccess(people)),
-    setSelectedDev: selectedDev => dispatch(selectDev(selectedDev)),
+    loadPeople: userId => dispatch(loadPeopleAction(userId)),
+    loadPeopleSuccess: people => dispatch(loadPeopleSuccessAction(people)),
+    selectedDev: selectedDev => dispatch(selectDevAction(selectedDev)),
+    filterData: userId => dispatch(filterDataAction(userId)),
+    toggleFilter: () => dispatch(toggleFilterAction()),
   };
 }
 
