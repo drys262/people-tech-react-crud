@@ -1,6 +1,11 @@
 // import produce from 'immer';
 import mainPageReducer from '../reducer';
-// import { someAction } from '../actions';
+import {
+  toggleFilter,
+  loadPeople,
+  loadPeopleFailed,
+  loadPeopleSuccess,
+} from '../actions';
 
 /* eslint-disable default-case, no-param-reassign */
 describe('mainPageReducer', () => {
@@ -8,17 +13,19 @@ describe('mainPageReducer', () => {
     expect(mainPageReducer(undefined, {})).toMatchSnapshot();
   });
 
-  /**
-   * Example state change comparison
-   *
-   * it('should handle the someAction action correctly', () => {
-   *   const expectedResult = produce(state, draft => {
-   *     draft.loading = true;
-   *     draft.error = false;
-   *     draft.userData.nested = false;
-   *   });
-   *
-   *   expect(appReducer(state, someAction())).toEqual(expectedResult);
-   * });
-   */
+  it('handles the toggleFilter', () => {
+    expect(mainPageReducer({}, toggleFilter())).toMatchSnapshot();
+  });
+
+  it('handles the loadPeople', () => {
+    expect(mainPageReducer({}, loadPeople(1))).toMatchSnapshot();
+  });
+  it('handles the loadPeopleFailed', () => {
+    expect(
+      mainPageReducer({}, loadPeopleFailed('error message')),
+    ).toMatchSnapshot();
+  });
+  it('handles the loadPeopleSuccess', () => {
+    expect(mainPageReducer({}, loadPeopleSuccess([]))).toMatchSnapshot();
+  });
 });

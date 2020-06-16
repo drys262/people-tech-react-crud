@@ -1,8 +1,40 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`mainPageReducer handles the loadPeople 1`] = `
+Object {
+  "isFetchingPeople": true,
+}
+`;
+
+exports[`mainPageReducer handles the loadPeopleFailed 1`] = `
+Object {
+  "isFetchingPeople": false,
+}
+`;
+
+exports[`mainPageReducer handles the loadPeopleSuccess 1`] = `
+Object {
+  "isFetchingPeople": false,
+  "people": Array [],
+}
+`;
+
+exports[`mainPageReducer handles the toggleFilter 1`] = `
+Object {
+  "toggleFilter": "asc",
+}
+`;
+
 exports[`mainPageReducer returns the initial state 1`] = `
 Object {
+  "error": false,
+  "errorMessage": "",
+  "isFetchingPeople": false,
+  "loadingRepos": false,
   "people": Array [],
   "searchTerm": "",
+  "selectedDev": Object {},
+  "selectedDevRepo": Array [],
+  "toggleFilter": "asc",
 }
 `;
